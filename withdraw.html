@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PrimeVest | Withdraw</title>
+
+<link rel="stylesheet" href="css/withdraw.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+
+<body>
+
+<header>
+
+<a href="dashboard.html">
+<i class="fa-solid fa-arrow-left"></i>
+</a>
+
+<h2>Withdraw</h2>
+
+<div></div>
+
+</header>
+
+<section class="wallet-card">
+
+<h3>Available Balance</h3>
+
+<h1 id="balance">$0.00</h1>
+
+</section>
+
+<section class="withdraw-box">
+
+<h3>M-Pesa Withdrawal</h3>
+
+<label>M-Pesa Number</label>
+
+<input
+type="tel"
+id="phone"
+placeholder="2547XXXXXXXX">
+
+<label>Amount</label>
+
+<input
+type="number"
+id="amount"
+placeholder="Enter Amount">
+
+<button id="withdrawBtn">
+
+<i class="fa-solid fa-money-bill-transfer"></i>
+
+Withdraw
+
+</button>
+
+<p id="status"></p>
+
+</section>
+
+<section class="history">
+
+<h3>Withdrawal History</h3>
+
+<ul id="withdrawHistory">
+
+<li>No withdrawals yet.</li>
+
+</ul>
+
+</section>
+
+<nav>
+
+<a href="dashboard.html">
+
+<i class="fa-solid fa-house"></i>
+
+Home
+
+</a>
+
+<a href="trade.html">
+
+<i class="fa-solid fa-chart-line"></i>
+
+Trade
+
+</a>
+
+<a href="deposit.html">
+
+<i class="fa-solid fa-wallet"></i>
+
+Deposit
+
+</a>
+
+<a href="withdraw.html" class="active">
+
+<i class="fa-solid fa-money-bill-transfer"></i>
+
+Withdraw
+
+</a>
+
+</nav>
+
+<script src="js/withdraw.js"></script>
+
+</body>
+
+</html>
