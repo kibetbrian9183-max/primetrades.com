@@ -1,0 +1,287 @@
+/* ==================================
+   PRIMEVEST TRADE
+================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:#fff;
+    padding-bottom:90px;
+}
+
+/* ================= HEADER ================= */
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 20px;
+    background:#111827;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:22px;
+    font-weight:700;
+    color:#3b82f6;
+}
+
+.balance{
+    background:#1e293b;
+    padding:8px 14px;
+    border-radius:12px;
+    font-size:14px;
+}
+
+/* ================= MARKET CARD ================= */
+
+.market-card{
+    margin:20px;
+    padding:20px;
+    background:#1e293b;
+    border-radius:20px;
+}
+
+.market-card h2{
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+#livePrice{
+    color:#22c55e;
+    font-size:22px;
+    font-weight:600;
+    margin-bottom:15px;
+}
+
+canvas{
+    width:100%!important;
+    height:260px!important;
+}
+
+/* ================= TRADE BOX ================= */
+
+.trade-box{
+    margin:20px;
+    background:#1e293b;
+    padding:20px;
+    border-radius:20px;
+}
+
+.trade-box h3{
+    margin-bottom:20px;
+}
+
+.trade-box label{
+    display:block;
+    margin:15px 0 8px;
+    color:#cbd5e1;
+}
+
+.trade-box input,
+.trade-box select{
+    width:100%;
+    height:52px;
+    background:#0f172a;
+    border:1px solid #334155;
+    border-radius:12px;
+    color:#fff;
+    padding:0 15px;
+    outline:none;
+    font-size:15px;
+}
+
+.trade-box input:focus,
+.trade-box select:focus{
+    border-color:#3b82f6;
+}
+
+/* ================= BUY & SELL ================= */
+
+.buttons{
+    display:flex;
+    gap:15px;
+    margin-top:10px;
+}
+
+.buy,
+.sell{
+    flex:1;
+    height:52px;
+    border:none;
+    border-radius:12px;
+    color:#fff;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.buy{
+    background:#16a34a;
+}
+
+.sell{
+    background:#dc2626;
+}
+
+.buy:hover,
+.sell:hover{
+    transform:translateY(-2px);
+}
+
+/* ================= START TRADE ================= */
+
+#startTrade{
+    width:100%;
+    height:55px;
+    margin-top:25px;
+    border:none;
+    border-radius:14px;
+    background:#2563eb;
+    color:#fff;
+    font-size:17px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+#startTrade:hover{
+    background:#1d4ed8;
+}
+
+/* ================= STATUS ================= */
+
+.status-card{
+    margin:20px;
+    background:#1e293b;
+    border-radius:20px;
+    padding:20px;
+}
+
+.status-card h3{
+    margin-bottom:12px;
+}
+
+#tradeStatus{
+    color:#94a3b8;
+}
+
+/* ================= HISTORY ================= */
+
+.history{
+    margin:20px;
+    background:#1e293b;
+    border-radius:20px;
+    padding:20px;
+}
+
+.history h3{
+    margin-bottom:15px;
+}
+
+.history ul{
+    list-style:none;
+}
+
+.history li{
+    background:#0f172a;
+    margin-bottom:10px;
+    padding:15px;
+    border-radius:10px;
+    border-left:4px solid #3b82f6;
+}
+
+/* ================= NAVIGATION ================= */
+
+nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:70px;
+    background:#111827;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    border-top:1px solid rgba(255,255,255,.08);
+}
+
+nav a{
+    text-decoration:none;
+    color:#94a3b8;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-size:13px;
+}
+
+nav a i{
+    font-size:22px;
+    margin-bottom:4px;
+}
+
+nav a.active{
+    color:#3b82f6;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+.market-card,
+.trade-box,
+.status-card,
+.history{
+    margin:15px;
+}
+
+.buttons{
+    flex-direction:column;
+}
+
+.market-card h2{
+    font-size:24px;
+}
+
+#livePrice{
+    font-size:20px;
+}
+
+}
+
+@media(max-width:480px){
+
+header{
+    padding:15px;
+}
+
+.logo{
+    font-size:18px;
+}
+
+.balance{
+    font-size:12px;
+}
+
+canvas{
+    height:220px!important;
+}
+
+.trade-box,
+.market-card,
+.status-card,
+.history{
+    padding:18px;
+}
+
+}
