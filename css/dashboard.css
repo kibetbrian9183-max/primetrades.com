@@ -1,0 +1,223 @@
+/* ===============================
+   PRIMEVEST DASHBOARD
+================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:#fff;
+    padding-bottom:90px;
+}
+
+/* HEADER */
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px;
+    background:#111827;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:22px;
+    font-weight:700;
+    color:#3b82f6;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.header-right i{
+    font-size:22px;
+    cursor:pointer;
+}
+
+.avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+}
+
+/* BALANCE CARD */
+
+.balance-card{
+    margin:20px;
+    padding:25px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+}
+
+.balance-card h3{
+    font-weight:400;
+    opacity:.9;
+}
+
+.balance-card h1{
+    margin:12px 0 25px;
+    font-size:36px;
+}
+
+.wallet-buttons{
+    display:flex;
+    gap:15px;
+}
+
+.wallet-buttons button{
+    flex:1;
+    height:50px;
+    border:none;
+    border-radius:12px;
+    background:#fff;
+    color:#2563eb;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+/* CHART */
+
+.chart-card{
+    background:#1e293b;
+    margin:20px;
+    padding:20px;
+    border-radius:20px;
+}
+
+.chart-card h3{
+    margin-bottom:15px;
+}
+
+canvas{
+    width:100% !important;
+    height:250px !important;
+}
+
+/* ACTIONS */
+
+.actions{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    margin:20px;
+}
+
+.action-card{
+    background:#1e293b;
+    border-radius:18px;
+    padding:25px;
+    text-align:center;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.action-card:hover{
+    transform:translateY(-5px);
+}
+
+.action-card i{
+    font-size:28px;
+    color:#3b82f6;
+    margin-bottom:10px;
+}
+
+.action-card p{
+    font-size:16px;
+}
+
+/* BOTTOM NAVIGATION */
+
+nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:70px;
+    background:#111827;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    border-top:1px solid rgba(255,255,255,.08);
+}
+
+nav a{
+    color:#9ca3af;
+    text-decoration:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-size:13px;
+}
+
+nav a i{
+    font-size:22px;
+    margin-bottom:5px;
+}
+
+nav a.active{
+    color:#3b82f6;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+.balance-card h1{
+    font-size:30px;
+}
+
+.wallet-buttons{
+    flex-direction:column;
+}
+
+.actions{
+    grid-template-columns:1fr 1fr;
+}
+
+}
+
+@media(max-width:480px){
+
+header{
+    padding:15px;
+}
+
+.logo{
+    font-size:18px;
+}
+
+.balance-card{
+    margin:15px;
+}
+
+.chart-card{
+    margin:15px;
+}
+
+.actions{
+    margin:15px;
+    gap:12px;
+}
+
+.action-card{
+    padding:20px;
+}
+
+nav{
+    height:65px;
+}
+
+}
