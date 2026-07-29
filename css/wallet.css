@@ -73,4 +73,115 @@ font-size:20px;
 .deposit-box label{
 display:block;
 margin-top:15px;
-margin
+margin-bottom:8px;
+font-size:14px;
+}
+
+.deposit-box input{
+width:100%;
+padding:15px;
+border:none;
+outline:none;
+border-radius:12px;
+background:#334155;
+color:#fff;
+font-size:16px;
+}
+
+.deposit-box input::placeholder{
+color:#94a3b8;
+}
+
+.deposit-box button{
+width:100%;
+padding:15px;
+margin-top:25px;
+border:none;
+border-radius:12px;
+background:#2563eb;
+color:#fff;
+font-size:17px;
+font-weight:600;
+cursor:pointer;
+transition:.3s;
+}
+
+.deposit-box button:hover{
+background:#1d4ed8;
+}
+
+#status{
+margin-top:18px;
+text-align:center;
+font-size:15px;
+font-weight:500;
+}
+
+.history{
+width:92%;
+margin:25px auto;
+background:#1e293b;
+padding:20px;
+border-radius:16px;
+}
+
+.history h3{
+margin-bottom:15px;
+}
+
+.history ul{
+list-style:none;
+}
+
+.history li{
+padding:12px;
+margin-bottom:10px;
+background:#334155;
+border-radius:10px;
+font-size:14px;
+}
+
+nav{
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+height:70px;
+background:#111827;
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid rgba(255,255,255,.08);
+}
+
+nav a{
+display:flex;
+flex-direction:column;
+align-items:center;
+text-decoration:none;
+color:#94a3b8;
+font-size:13px;
+}
+
+nav a i{
+font-size:20px;
+margin-bottom:4px;
+}
+
+nav a.active{
+color:#2563eb;
+}
+
+@media(max-width:480px){
+
+.wallet-card h1{
+font-size:28px;
+}
+
+.deposit-box,
+.history,
+.wallet-card{
+width:95%;
+}
+
+}
