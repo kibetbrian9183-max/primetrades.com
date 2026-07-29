@@ -2,8 +2,8 @@
 // PRIMEVEST DEPOSIT
 // ======================================
 
-// Change this to your deployed backend
 const API_BASE_URL = "https://primetrades-mpesa-backend.onrender.com";
+const USD_TO_KES = 130; // Exchange Rate
 
 // ======================================
 // CHECK LOGIN
@@ -28,7 +28,7 @@ const historyList = document.getElementById("depositHistory");
 
 balance.textContent = "$" + Number(currentUser.balance || 0).toFixed(2);
 
-// Prefill phone number if available
+// Prefill phone
 if (currentUser.phone) {
     phoneInput.value = currentUser.phone;
 }
@@ -43,24 +43,23 @@ function loadHistory() {
 
     historyList.innerHTML = "";
 
-    if (deposits.length === 0) {
+    const userDeposits = deposits.filter(item => item.userId === currentUser.id);
+
+    if (userDeposits.length === 0) {
         historyList.innerHTML = "<li>No deposits yet.</li>";
         return;
     }
 
-    deposits
-        .filter(item => item.userId === currentUser.id)
-        .reverse()
-        .forEach(item => {
+    userDeposits.reverse().forEach(item => {
 
-            historyList.innerHTML += `
-                <li>
-                    KES ${item.amount} - ${item.status}<br>
-                    <small>${item.date}</small>
-                </li>
-            `;
+        historyList.innerHTML += `
+            <li>
+                KES ${(item.kesAmount ?? item.amount).toLocaleString()} - ${item.status}<br>
+                <small>${item.date}</small>
+            </li>
+        `;
 
-        });
+    });
 
 }
 
@@ -72,6 +71,15 @@ loadHistory();
 
 depositBtn.addEventListener("click", async () => {
 
+    let phone = phoneInput.value.trim();
+
+    // Remove spaces, dashes and +
+    phone = phone.replace(/[\s\-+]/g, "");
+
+    // Convert to 254 format
+    if (phone.startsWith("07") || phone.startsWith("01")) {
+        phone = "254" + phone.substring(1);
+    } else if (phone.startsWith("7") || phone.startsWith("
     let phone = phoneInput.value.trim();
 
     // Remove spaces, dashes and +
