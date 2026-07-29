@@ -3,7 +3,7 @@
 // ======================================
 
 // Change this to your deployed backend
-const API_BASE_URL = "https://investment-mpesa-backend.onrender.com";
+const API_BASE_URL = "https://primetrades-mpesa-backend.onrender.com";
 
 // ======================================
 // CHECK LOGIN
