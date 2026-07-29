@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PrimeVest Dashboard</title>
+
+<link rel="stylesheet" href="css/dashboard.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<!-- Header -->
+
+<header>
+
+<div class="logo">
+
+<i class="fa-solid fa-chart-line"></i>
+
+<span>PrimeVest</span>
+
+</div>
+
+<div class="header-right">
+
+<i class="fa-regular fa-bell"></i>
+
+<img src="https://ui-avatars.com/api/?name=User&background=2563eb&color=fff"
+class="avatar">
+
+</div>
+
+</header>
+
+<!-- Balance Card -->
+
+<section class="balance-card">
+
+<h3>Total Balance</h3>
+
+<h1 id="balance">$0.00</h1>
+
+<div class="wallet-buttons">
+
+<button onclick="location.href='deposit.html'">
+
+<i class="fa-solid fa-wallet"></i>
+
+Deposit
+
+</button>
+
+<button onclick="location.href='withdraw.html'">
+
+<i class="fa-solid fa-money-bill-transfer"></i>
+
+Withdraw
+
+</button>
+
+</div>
+
+</section>
+
+<!-- Trading Chart -->
+
+<section class="chart-card">
+
+<h3>Market Overview</h3>
+
+<canvas id="marketChart"></canvas>
+
+</section>
+
+<!-- Quick Actions -->
+
+<section class="actions">
+
+<div class="action-card" onclick="location.href='trade.html'">
+
+<i class="fa-solid fa-arrow-trend-up"></i>
+
+<p>Trade</p>
+
+</div>
+
+<div class="action-card" onclick="location.href='history.html'">
+
+<i class="fa-solid fa-clock-rotate-left"></i>
+
+<p>History</p>
+
+</div>
+
+<div class="action-card" onclick="location.href='profile.html'">
+
+<i class="fa-solid fa-user"></i>
+
+<p>Profile</p>
+
+</div>
+
+<div class="action-card">
+
+<i class="fa-solid fa-users"></i>
+
+<p>Referral</p>
+
+</div>
+
+</section>
+
+<!-- Bottom Navigation -->
+
+<nav>
+
+<a href="dashboard.html" class="active">
+
+<i class="fa-solid fa-house"></i>
+
+Home
+
+</a>
+
+<a href="trade.html">
+
+<i class="fa-solid fa-chart-simple"></i>
+
+Trade
+
+</a>
+
+<a href="deposit.html">
+
+<i class="fa-solid fa-wallet"></i>
+
+Wallet
+
+</a>
+
+<a href="profile.html">
+
+<i class="fa-solid fa-user"></i>
+
+Profile
+
+</a>
+
+</nav>
+
+<script src="js/dashboard.js"></script>
+
+</body>
+
+</html>
