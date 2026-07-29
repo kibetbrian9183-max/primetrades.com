@@ -1,0 +1,231 @@
+/* ===============================
+   PRIMEVEST LOGIN
+================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#0f1424;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:20px;
+    color:#fff;
+}
+
+/* ===============================
+   LOGIN CARD
+================================= */
+
+.login-container{
+    width:100%;
+    max-width:420px;
+    background:#171d30;
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:22px;
+    padding:40px 30px;
+    box-shadow:0 20px 40px rgba(0,0,0,.35);
+}
+
+/* ===============================
+   LOGO
+================================= */
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:35px;
+}
+
+.logo-box{
+    width:58px;
+    height:58px;
+    border-radius:16px;
+    background:linear-gradient(135deg,#2f80ed,#45d1ff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:24px;
+    color:#fff;
+}
+
+.logo h2{
+    font-size:28px;
+    font-weight:700;
+}
+
+h1{
+    font-size:34px;
+    margin-bottom:8px;
+}
+
+p{
+    color:#9aa5bf;
+    margin-bottom:35px;
+    font-size:15px;
+}
+
+/* ===============================
+   INPUTS
+================================= */
+
+.input-box{
+    display:flex;
+    align-items:center;
+    background:#101726;
+    border:1px solid #29324a;
+    border-radius:14px;
+    padding:0 18px;
+    margin-bottom:20px;
+    transition:.3s;
+}
+
+.input-box:focus-within{
+    border-color:#2f80ed;
+    box-shadow:0 0 12px rgba(47,128,237,.25);
+}
+
+.input-box i{
+    color:#7d8ba8;
+    font-size:17px;
+}
+
+.input-box input{
+    flex:1;
+    height:58px;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:#fff;
+    padding:0 15px;
+    font-size:15px;
+}
+
+.input-box input::placeholder{
+    color:#7d8ba8;
+}
+
+.toggle-password{
+    cursor:pointer;
+}
+
+/* ===============================
+   OPTIONS
+================================= */
+
+.options{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+    font-size:14px;
+}
+
+.options label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#cfd6ea;
+}
+
+.options input{
+    accent-color:#2f80ed;
+}
+
+.options a{
+    color:#4f9bff;
+    text-decoration:none;
+}
+
+.options a:hover{
+    text-decoration:underline;
+}
+
+/* ===============================
+   BUTTON
+================================= */
+
+button{
+    width:100%;
+    height:58px;
+    border:none;
+    border-radius:15px;
+    background:linear-gradient(135deg,#2f80ed,#4285f4);
+    color:#fff;
+    font-size:17px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 25px rgba(47,128,237,.35);
+}
+
+button i{
+    margin-left:10px;
+}
+
+/* ===============================
+   REGISTER
+================================= */
+
+.register{
+    text-align:center;
+    margin-top:30px;
+    color:#b7c0d8;
+}
+
+.register a{
+    color:#4f9bff;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.register a:hover{
+    text-decoration:underline;
+}
+
+/* ===============================
+   RESPONSIVE
+================================= */
+
+@media(max-width:480px){
+
+.login-container{
+    padding:30px 22px;
+}
+
+.logo-box{
+    width:50px;
+    height:50px;
+}
+
+.logo h2{
+    font-size:24px;
+}
+
+h1{
+    font-size:30px;
+}
+
+button,
+.input-box input{
+    height:54px;
+}
+
+.options{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:15px;
+}
+
+}
