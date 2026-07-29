@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PrimeVest Trade</title>
+
+<link rel="stylesheet" href="css/trade.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+
+<i class="fa-solid fa-chart-line"></i>
+
+<span>PrimeVest</span>
+
+</div>
+
+<div class="balance">
+
+Balance:
+<strong id="userBalance">$0.00</strong>
+
+</div>
+
+</header>
+
+<!-- Market Card -->
+
+<section class="market-card">
+
+<h2>BTC/USD</h2>
+
+<p id="livePrice">$64,250.35</p>
+
+<canvas id="tradeChart"></canvas>
+
+</section>
+
+<!-- Trade Form -->
+
+<section class="trade-box">
+
+<h3>Open Trade</h3>
+
+<label>Trade Amount</label>
+
+<input
+type="number"
+id="tradeAmount"
+placeholder="Enter amount">
+
+<label>Direction</label>
+
+<div class="buttons">
+
+<button id="buyBtn" class="buy">
+
+<i class="fa-solid fa-arrow-up"></i>
+
+BUY
+
+</button>
+
+<button id="sellBtn" class="sell">
+
+<i class="fa-solid fa-arrow-down"></i>
+
+SELL
+
+</button>
+
+</div>
+
+<label>Duration</label>
+
+<select id="duration">
+
+<option value="30">30 Seconds</option>
+
+<option value="60">1 Minute</option>
+
+<option value="300">5 Minutes</option>
+
+<option value="600">10 Minutes</option>
+
+</select>
+
+<button id="startTrade">
+
+Start Trade
+
+</button>
+
+</section>
+
+<!-- Trade Status -->
+
+<section class="status-card">
+
+<h3>Trade Status</h3>
+
+<p id="tradeStatus">
+
+No active trade.
+
+</p>
+
+</section>
+
+<!-- Recent Trades -->
+
+<section class="history">
+
+<h3>Recent Trades</h3>
+
+<ul id="historyList">
+
+<li>No trades yet.</li>
+
+</ul>
+
+</section>
+
+<!-- Bottom Navigation -->
+
+<nav>
+
+<a href="dashboard.html">
+
+<i class="fa-solid fa-house"></i>
+
+Home
+
+</a>
+
+<a href="trade.html" class="active">
+
+<i class="fa-solid fa-chart-simple"></i>
+
+Trade
+
+</a>
+
+<a href="deposit.html">
+
+<i class="fa-solid fa-wallet"></i>
+
+Wallet
+
+</a>
+
+<a href="profile.html">
+
+<i class="fa-solid fa-user"></i>
+
+Profile
+
+</a>
+
+</nav>
+
+<script src="js/trade.js"></script>
+
+</body>
+
+</html>
