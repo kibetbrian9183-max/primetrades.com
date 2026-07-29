@@ -72,11 +72,34 @@ loadHistory();
 
 depositBtn.addEventListener("click", async () => {
 
-    const phone = phoneInput.value.trim();
-    const amount = Number(amountInput.value);
+    let phone = phoneInput.value.trim();
 
-    if (!phone || amount <= 0) {
-        alert("Enter a valid phone number and amount.");
+    // Remove spaces, dashes and +
+    phone = phone.replace(/[\s\-+]/g, "");
+
+    // Convert Kenyan numbers to 254 format
+    if (phone.startsWith("07") || phone.startsWith("01")) {
+        phone = "254" + phone.substring(1);
+    } else if (phone.startsWith("7") || phone.startsWith("1")) {
+        phone = "254" + phone;
+    }
+
+    // Keep only digits
+    phone = phone.replace(/\D/g, "");
+
+    // Validate
+    if (!/^254(7|1)\d{8}$/.test(phone)) {
+        alert("Enter a valid Safaricom phone number.");
+        return;
+    }
+
+    // Remove commas, KSh, spaces etc.
+    const amount = Number(
+        amountInput.value.replace(/[^\d.]/g, "")
+    );
+
+    if (isNaN(amount) || amount <= 0) {
+        alert("Enter a valid amount.");
         return;
     }
 
