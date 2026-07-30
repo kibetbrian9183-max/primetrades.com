@@ -134,9 +134,7 @@ depositBtn.addEventListener("click", async () => {
         statusBox.textContent =
             "STK Push sent. Complete payment on your phone.";
 
-        // Demo only
-        setTimeout(() => {
-const checkoutRequestId = data.checkoutRequestId;
+        const checkoutRequestId = data.checkoutRequestId;
 
 const interval = setInterval(async () => {
 
@@ -191,16 +189,13 @@ const interval = setInterval(async () => {
         );
 
         deposits.push({
-
-            userId: currentUser.id,
-            kesAmount: payment.amountPaid,
-            usdAmount: usdAmount,
-            mpesaReceipt: payment.mpesaReceipt,
-            status: "Completed",
-            date: new Date().toLocaleString()
-
-        });
-
+    userId: currentUser.id,
+    amount: payment.amountPaid,
+    usdAmount: usdAmount,
+    mpesaReceipt: payment.mpesaReceipt,
+    status: "Completed",
+    date: new Date().toLocaleString()
+});
         localStorage.setItem(
             "deposits",
             JSON.stringify(deposits)
