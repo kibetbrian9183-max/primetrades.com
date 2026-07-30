@@ -136,6 +136,7 @@ depositBtn.addEventListener("click", async () => {
 
         const checkoutRequestId = data.checkoutRequestId;
 
+// Check payment status every 3 seconds
 const interval = setInterval(async () => {
 
     try {
@@ -158,13 +159,17 @@ const interval = setInterval(async () => {
             statusBox.textContent =
                 payment.failureReason || "Payment failed.";
 
+            depositBtn.disabled = false;
+            depositBtn.innerHTML =
+                '<i class="fa-solid fa-wallet"></i> Deposit Now';
+
             return;
         }
 
-        // SUCCESS
+        // Convert deposited KES to USD
+        const usdAmount = Number(payment.amountPaid) / USD_TO_KES;
 
-        const usdAmount = payment.amountPaid / USD_TO_KES;
-
+        // Credit wallet
         currentUser.balance =
             Number(currentUser.balance || 0) + usdAmount;
 
@@ -188,14 +193,16 @@ const interval = setInterval(async () => {
             JSON.stringify(users)
         );
 
+        // Save deposit history in KES
         deposits.push({
-    userId: currentUser.id,
-    amount: payment.amountPaid,
-    usdAmount: usdAmount,
-    mpesaReceipt: payment.mpesaReceipt,
-    status: "Completed",
-    date: new Date().toLocaleString()
-});
+            userId: currentUser.id,
+            amount: Number(payment.amountPaid),
+            usdAmount: usdAmount,
+            mpesaReceipt: payment.mpesaReceipt,
+            status: "Completed",
+            date: new Date().toLocaleString()
+        });
+
         localStorage.setItem(
             "deposits",
             JSON.stringify(deposits)
@@ -209,6 +216,10 @@ const interval = setInterval(async () => {
         statusBox.textContent =
             "Deposit completed successfully.";
 
+        depositBtn.disabled = false;
+        depositBtn.innerHTML =
+            '<i class="fa-solid fa-wallet"></i> Deposit Now';
+
     } catch (err) {
 
         clearInterval(interval);
@@ -217,21 +228,29 @@ const interval = setInterval(async () => {
         statusBox.textContent =
             "Unable to verify payment.";
 
-    }
-
-}, 3000);
-
-    } catch (error) {
-
-        statusBox.style.color = "#ef4444";
-        statusBox.textContent = error.message;
-
-    } finally {
-
         depositBtn.disabled = false;
         depositBtn.innerHTML =
             '<i class="fa-solid fa-wallet"></i> Deposit Now';
 
     }
 
-});
+}, 3000);
+
+// Stop checking after 2 minutes
+setTimeout(() => {
+
+    clearInterval(interval);
+
+    if (depositBtn.disabled) {
+
+        depositBtn.disabled = false;
+        depositBtn.innerHTML =
+            '<i class="fa-solid fa-wallet"></i> Deposit Now';
+
+        statusBox.style.color = "#ef4444";
+        statusBox.textContent =
+            "Payment verification timed out.";
+
+    }
+
+}, 120000);
