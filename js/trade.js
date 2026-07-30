@@ -709,3 +709,86 @@ window.addEventListener("focus",()=>{
     }
 
 });
+// ======================================
+// SIDEBAR MENU
+// ======================================
+
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const closeMenu = document.getElementById("closeMenu");
+
+// Load logged-in user into sidebar
+if (currentUser) {
+
+    const username = document.getElementById("username");
+    const email = document.getElementById("email");
+    const avatar = document.getElementById("avatar");
+
+    if (username) {
+        username.textContent = currentUser.username || "PrimeVest User";
+    }
+
+    if (email) {
+        email.textContent = currentUser.email || "";
+    }
+
+    if (avatar) {
+        avatar.textContent =
+            (currentUser.username || "P")
+            .charAt(0)
+            .toUpperCase();
+    }
+
+}
+
+// Open menu
+if (menuBtn) {
+
+    menuBtn.addEventListener("click", () => {
+
+        sidebar.classList.add("open");
+        overlay.classList.add("show");
+
+    });
+
+}
+
+// Close menu
+function closeSidebar() {
+
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+
+}
+
+if (closeMenu) {
+
+    closeMenu.addEventListener("click", closeSidebar);
+
+}
+
+if (overlay) {
+
+    overlay.addEventListener("click", closeSidebar);
+
+}
+
+// Logout
+const logoutBtn = document.querySelector(".logout");
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener("click", () => {
+
+        if (confirm("Log out of PrimeVest?")) {
+
+            localStorage.removeItem("currentUser");
+
+            window.location.href = "index.html";
+
+        }
+
+    });
+
+}
