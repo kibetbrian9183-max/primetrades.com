@@ -1,0 +1,362 @@
+/* ===========================
+   PRIMEVEST PROFILE CSS
+   =========================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#121722;
+    color:#fff;
+    overflow-x:hidden;
+}
+
+/* Overlay */
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    opacity:0;
+    visibility:hidden;
+    transition:.3s;
+    z-index:90;
+}
+
+.overlay.show{
+    opacity:1;
+    visibility:visible;
+}
+
+/* ===========================
+   Sidebar
+=========================== */
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:-330px;
+    width:320px;
+    height:100vh;
+    background:#1b1f2a;
+    transition:.35s ease;
+    z-index:100;
+    overflow-y:auto;
+    box-shadow:8px 0 30px rgba(0,0,0,.45);
+}
+
+.sidebar.open{
+    left:0;
+}
+
+/* Header */
+
+.sidebar-header{
+    height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.sidebar-header h3{
+    font-size:20px;
+    font-weight:600;
+}
+
+.close-btn{
+    border:none;
+    background:none;
+    color:#fff;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.language{
+    color:#ddd;
+    font-size:14px;
+    font-weight:500;
+}
+
+/* ===========================
+   User
+=========================== */
+
+.profile-box{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:22px 20px;
+}
+
+.avatar{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#4285f4,#2d63ff);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    font-weight:700;
+}
+
+.user-info h3{
+    font-size:20px;
+    margin-bottom:4px;
+}
+
+.user-info p{
+    color:#9ea4b0;
+    font-size:14px;
+}
+
+/* ===========================
+   Logo
+=========================== */
+
+.menu-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:0 20px 18px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.logo-circle{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#ff4d5b;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+}
+
+.menu-title span{
+    font-size:18px;
+    font-weight:500;
+}
+
+/* ===========================
+   Menu
+=========================== */
+
+.menu{
+    list-style:none;
+    padding:10px 0;
+}
+
+.menu li{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:17px 20px;
+    color:#d5d7dd;
+    cursor:pointer;
+    transition:.25s;
+    font-size:16px;
+}
+
+.menu li:hover{
+    background:#232a38;
+}
+
+.menu li i:first-child{
+    width:20px;
+    text-align:center;
+    color:#a8b1c0;
+}
+
+.menu li i:last-child{
+    margin-left:auto;
+    color:#8c94a3;
+}
+
+.menu li.active{
+    background:#302847;
+    color:#c99eff;
+}
+
+.menu li.active i{
+    color:#b884ff;
+}
+
+.divider{
+    height:1px;
+    background:rgba(255,255,255,.08);
+    margin:8px 0;
+}
+
+/* ===========================
+   Dark Mode
+=========================== */
+
+.toggle-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 20px;
+}
+
+.left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#d8d8d8;
+}
+
+.switch{
+    position:relative;
+    width:52px;
+    height:28px;
+}
+
+.switch input{
+    display:none;
+}
+
+.slider{
+    position:absolute;
+    inset:0;
+    background:#3c4659;
+    border-radius:50px;
+    transition:.3s;
+}
+
+.slider:before{
+    content:"";
+    position:absolute;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:#fff;
+    left:3px;
+    top:3px;
+    transition:.3s;
+}
+
+input:checked + .slider{
+    background:#3f8cff;
+}
+
+input:checked + .slider:before{
+    transform:translateX(24px);
+}
+
+/* ===========================
+   Logout
+=========================== */
+
+.logout{
+    margin-top:20px;
+    padding:22px;
+    color:#ff5d63;
+    font-size:17px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    border-top:1px solid rgba(255,255,255,.06);
+    cursor:pointer;
+    transition:.25s;
+}
+
+.logout:hover{
+    background:#232a38;
+}
+
+/* ===========================
+   Main
+=========================== */
+
+.main{
+    min-height:100vh;
+}
+
+.topbar{
+    height:65px;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:0 18px;
+    background:#161c28;
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.topbar button{
+    background:none;
+    border:none;
+    color:#fff;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.topbar h2{
+    font-size:22px;
+}
+
+.placeholder{
+    height:calc(100vh - 65px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#9097a6;
+    text-align:center;
+}
+
+.placeholder i{
+    font-size:70px;
+    margin-bottom:20px;
+    color:#3f8cff;
+}
+
+.placeholder h2{
+    color:#fff;
+    margin-bottom:10px;
+}
+
+.placeholder p{
+    font-size:15px;
+}
+
+/* Scrollbar */
+
+.sidebar::-webkit-scrollbar{
+    width:4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb{
+    background:#3b82f6;
+    border-radius:20px;
+}
+
+/* Responsive */
+
+@media(max-width:480px){
+
+.sidebar{
+    width:86%;
+}
+
+.user-info h3{
+    font-size:18px;
+}
+
+.menu li{
+    font-size:15px;
+}
+
+.topbar h2{
+    font-size:20px;
+}
+
+}
