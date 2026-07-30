@@ -75,15 +75,14 @@ withdrawBtn.addEventListener("click", () => {
         return;
     }
 
-    const kesAmount = Number(amountInput.value.replace(/[^\d.]/g, ""));
+    // User enters USD
+    const usdAmount = Number(amountInput.value);
 
-    if (isNaN(kesAmount) || kesAmount <= 0) {
+    if (isNaN(usdAmount) || usdAmount <= 0) {
         status.style.color = "#ef4444";
         status.textContent = "Enter a valid amount.";
         return;
     }
-
-    const usdAmount = kesAmount / USD_TO_KES;
 
     if (usdAmount > Number(currentUser.balance || 0)) {
         status.style.color = "#ef4444";
@@ -91,11 +90,15 @@ withdrawBtn.addEventListener("click", () => {
         return;
     }
 
+    // Convert USD to KES
+    const kesAmount = Math.round(usdAmount * USD_TO_KES);
+
     withdrawBtn.disabled = true;
     withdrawBtn.innerHTML = "Processing...";
 
     setTimeout(() => {
 
+        // Deduct USD from wallet
         currentUser.balance -= usdAmount;
 
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
@@ -111,15 +114,16 @@ withdrawBtn.addEventListener("click", () => {
         withdrawals.push({
             userId: currentUser.id,
             phone: phone,
-            kesAmount: kesAmount,
             usdAmount: usdAmount,
+            kesAmount: kesAmount,
             status: "Pending",
             date: new Date().toLocaleString()
         });
 
         localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
 
-        balance.textContent = "$" + currentUser.balance.toFixed(2);
+        balance.textContent =
+            "$" + Number(currentUser.balance).toFixed(2);
 
         loadHistory();
 
