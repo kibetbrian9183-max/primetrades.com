@@ -1,558 +1,889 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TRADEX — Trading Dashboard</title>
+<style>
+  :root{
+    --bg:#0B0E14;
+    --surface:#10141D;
+    --surfaceAlt:#151A25;
+    --elevated:#1A2030;
+    --border: rgba(255,255,255,0.07);
+    --borderStrong: rgba(255,255,255,0.12);
+    --text:#E9ECF2;
+    --textDim:#7D8699;
+    --textFaint:#4B5566;
+    --amber:#FFB020;
+    --amberDim: rgba(255,176,32,0.12);
+    --green:#16C784;
+    --greenDim: rgba(22,199,132,0.14);
+    --red:#F6465D;
+    --redDim: rgba(246,70,93,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height:100vh;
+    width:100%;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  input{font-family:inherit;}
+  .hidden{display:none !important;}
 
-<meta charset="UTF-8">
+  /* ============ HEADER ============ */
+  header{
+    position:sticky;
+    top:0;
+    z-index:40;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:0 12px;
+    height:64px;
+    border-bottom:1px solid var(--border);
+    background:rgba(11,14,20,0.92);
+    backdrop-filter:blur(8px);
+  }
+  .brand{display:flex;align-items:center;gap:8px;}
+  .brand-mark{
+    display:flex;align-items:center;justify-content:center;
+    width:36px;height:36px;border-radius:12px;font-weight:700;font-size:16px;
+    background:var(--amber);color:#181205;
+  }
+  .brand-name{font-size:14px;font-weight:600;letter-spacing:0.02em;color:var(--textDim);}
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+  .header-right{display:flex;align-items:center;gap:8px;}
 
-<title>PrimeVest Trade</title>
+  .icon-btn{
+    display:flex;align-items:center;justify-content:center;
+    width:40px;height:40px;border-radius:12px;border:1px solid var(--border);
+    background:var(--surfaceAlt);
+    position:relative;
+  }
+  .icon-btn svg{color:var(--textDim);}
 
-<link rel="stylesheet" href="css/trade.css">
+  .balance-wrap{position:relative;}
+  .balance-btn{
+    display:flex;align-items:center;gap:6px;height:40px;padding:0 12px;
+    border-radius:12px;border:1px solid var(--border);
+    background:var(--surfaceAlt);font-size:14px;font-weight:600;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .balance-menu{
+    position:absolute;right:0;margin-top:8px;width:176px;border-radius:12px;
+    border:1px solid var(--border);overflow:hidden;
+    box-shadow:0 20px 40px rgba(0,0,0,0.5);
+    background:var(--elevated);
+    display:none;
+    z-index:50;
+  }
+  .balance-menu.open{display:block;}
+  .balance-menu button{
+    width:100%;text-align:left;padding:12px 16px;font-size:14px;
+  }
+  .balance-menu button:hover{background:rgba(255,255,255,0.05);}
+  .balance-menu .sub{font-size:11px;font-family: ui-monospace, monospace; color:var(--textDim);}
+  .balance-menu hr{border:none;border-top:1px solid var(--border);margin:0;}
 
-<link rel="preconnect"
-href="https://fonts.googleapis.com">
+  .deposit-btn{
+    height:40px;padding:0 16px;border-radius:12px;font-size:14px;font-weight:700;
+    background:var(--amber);color:#181205;white-space:nowrap;
+  }
+  .deposit-btn-mobile{
+    display:none;
+    width:40px;height:40px;border-radius:12px;font-weight:700;
+    background:var(--amber);color:#181205;
+  }
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
+  .notif-dot{
+    position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:50%;
+    background:var(--amber);
+  }
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  /* ============ SIDEBAR DRAWER ============ */
+  .drawer-overlay{
+    position:fixed;inset:0;z-index:60;display:none;
+  }
+  .drawer-overlay.open{display:flex;justify-content:flex-end;}
+  .drawer-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.55);}
+  .drawer{
+    position:relative;width:320px;max-width:85%;height:100%;overflow-y:auto;
+    background:var(--surface);border-left:1px solid var(--border);
+    transform:translateX(100%);
+    transition:transform 0.25s ease;
+  }
+  .drawer-overlay.open .drawer{transform:translateX(0);}
+  .drawer-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px;border-bottom:1px solid var(--border);
+  }
+  .drawer-header .title{font-size:18px;font-weight:700;}
+  .drawer-header .lang{font-size:14px;font-weight:600;display:flex;align-items:center;gap:4px;}
 
+  .drawer-profile{
+    display:flex;align-items:center;gap:12px;padding:20px;border-bottom:1px solid var(--border);
+  }
+  .avatar{
+    width:56px;height:56px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;
+    background:#3B6DF0;color:#fff;
+  }
+  .drawer-profile .name{font-size:16px;font-weight:700;}
+  .drawer-profile .email{font-size:14px;color:var(--textDim);}
+
+  .drawer-brand-row{
+    display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);
+  }
+  .avatar-sm{
+    width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:700;
+    background:#F0475B;color:#fff;flex-shrink:0;
+  }
+  .drawer-brand-row span{font-size:16px;font-weight:700;}
+
+  .drawer-nav{padding:8px 0;border-bottom:1px solid var(--border);}
+  .drawer-item{
+    width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:16px 20px;font-size:14px;
+  }
+  .drawer-item:hover{background:rgba(255,255,255,0.05);}
+  .drawer-item .left{display:flex;align-items:center;gap:16px;}
+  .drawer-item .label{font-weight:500;}
+  .drawer-item.highlight{color:#C77DFF;background:rgba(124,58,237,0.18);}
+
+  .drawer-toggle-row{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:16px 20px;font-size:14px;
+  }
+  .switch{
+    position:relative;width:44px;height:24px;border-radius:9999px;
+    background:var(--borderStrong);transition:background 0.2s;flex-shrink:0;
+  }
+  .switch.on{background:#3B82F6;}
+  .switch .knob{
+    position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;
+    background:#fff;transition:transform 0.2s;
+  }
+  .switch.on .knob{transform:translateX(20px);}
+
+  .logout-btn{
+    width:100%;display:flex;align-items:center;gap:12px;padding:20px;font-size:14px;font-weight:500;
+    color:var(--red);
+  }
+
+  /* ============ MAIN ============ */
+  main{
+    max-width:1280px;margin:0 auto;padding:16px 12px 112px;
+  }
+  .layout{
+    display:flex;flex-direction:column;gap:16px;
+  }
+
+  /* Market tabs */
+  .tabs{
+    display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;
+    scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex-shrink:0;height:48px;padding:0 20px;border-radius:16px;font-size:14px;font-weight:600;
+    white-space:nowrap;border:1px solid var(--border);background:var(--surfaceAlt);color:var(--textDim);
+    transition:background 0.15s, color 0.15s;
+  }
+  .tab-btn.active{background:var(--amber);color:#181205;border-color:var(--amber);}
+
+  /* Chart card */
+  .chart-card{
+    border-radius:24px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;
+    background:var(--bg);
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+  }
+  .chart-head{
+    display:flex;align-items:flex-start;justify-content:space-between;
+    padding:16px 20px 8px;
+  }
+  .chart-symbol{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber);}
+  .chart-symbol span{font-size:12px;font-weight:600;letter-spacing:0.03em;color:var(--textDim);}
+  .price-row{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .price-value{font-size:28px;font-weight:700;font-family: ui-monospace, monospace;font-variant-numeric:tabular-nums;}
+  .price-change{
+    display:flex;align-items:center;gap:2px;font-size:14px;font-weight:600;
+    font-family: ui-monospace, monospace;
+  }
+  .zoom-controls{display:flex;align-items:center;gap:6px;}
+  .zoom-btn{
+    display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;
+    border:1px solid var(--border);background:var(--surfaceAlt);
+  }
+  .chart-canvas-wrap{height:260px;width:100%;padding:0 8px;}
+  #priceChart{width:100%;height:100%;display:block;}
+
+  /* Digit selector */
+  .digit-card{
+    border-radius:24px;border:1px solid var(--border);margin-bottom:16px;padding:16px 12px;
+    background:var(--surface);
+  }
+  .digit-title{font-size:12px;font-weight:600;letter-spacing:0.03em;color:var(--textDim);
+    margin-bottom:12px;padding:0 4px;}
+  .digit-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+  .digit-row::-webkit-scrollbar{display:none;}
+  .digit-item{
+    flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;
+  }
+  .digit-circle{
+    display:flex;align-items:center;justify-content:center;border-radius:50%;
+    font-weight:700;font-size:16px;width:46px;height:46px;
+    background:var(--elevated);color:var(--text);border:1px solid var(--border);
+    transition:background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .digit-circle.selected{background:var(--amber);color:#181205;border-color:var(--amber);}
+  .digit-pct{
+    font-size:11px;font-family: ui-monospace, monospace;font-variant-numeric:tabular-nums;
+    color:var(--textDim);transition:color 0.5s ease;
+  }
+  .digit-pct.selected{color:var(--amber);}
+  .digit-pct.highest{color:var(--text);font-weight:700;}
+
+  /* Trading panel */
+  .panel-card{
+    border-radius:24px;border:1px solid var(--border);padding:16px 20px;margin-bottom:16px;
+    background:var(--surface);
+  }
+  .mode-toggle{display:flex;padding:4px;border-radius:16px;background:var(--bg);margin-bottom:20px;}
+  .mode-btn{
+    flex:1;height:44px;border-radius:12px;font-size:14px;font-weight:700;color:var(--textDim);
+    transition:background 0.15s, color 0.15s;
+  }
+  .mode-btn.active{background:var(--amber);color:#181205;}
+
+  .stake-block{margin-bottom:16px;}
+  .stake-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .stake-label{font-size:12px;font-weight:600;letter-spacing:0.03em;color:var(--textDim);}
+  .stake-payout{font-size:12px;font-family: ui-monospace, monospace;color:var(--textFaint);}
+  .stake-payout b{color:var(--amber);font-weight:700;}
+  .stake-input-wrap{
+    display:flex;align-items:center;gap:8px;height:56px;border-radius:16px;border:1px solid var(--borderStrong);
+    padding:0 16px;background:var(--bg);
+  }
+  .stake-input-wrap .dollar{font-size:20px;font-weight:700;font-family: ui-monospace, monospace;color:var(--textDim);}
+  .stake-input-wrap input{
+    flex:1;background:transparent;border:none;outline:none;font-size:20px;font-weight:700;
+    font-family: ui-monospace, monospace;color:var(--text);width:100%;
+  }
+  .quick-amounts{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px;}
+  .quick-btn{
+    height:36px;border-radius:8px;font-size:12px;font-weight:600;font-family: ui-monospace, monospace;
+    background:var(--elevated);color:var(--textDim);border:1px solid var(--border);
+    transition:background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .quick-btn.active{background:var(--amberDim);color:var(--amber);border-color:var(--amber);}
+
+  .settings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+  .settings-item label{display:block;font-size:11px;margin-bottom:6px;color:var(--textDim);}
+  .settings-input{
+    display:flex;align-items:center;height:48px;border-radius:12px;border:1px solid var(--border);
+    padding:0 8px;justify-content:center;background:var(--bg);
+  }
+  .settings-input span{font-size:12px;font-family: ui-monospace, monospace;margin-right:2px;color:var(--textFaint);}
+  .settings-input input{
+    width:100%;background:transparent;border:none;outline:none;font-size:14px;font-weight:700;
+    font-family: ui-monospace, monospace;text-align:center;color:var(--text);
+  }
+
+  .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .action-btn{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:16px;
+    padding:20px 0;transition:transform 0.15s, box-shadow 0.15s;
+  }
+  .action-btn .main-label{font-size:18px;font-weight:800;color:#fff;}
+  .action-btn .sub-label{font-size:12px;font-weight:600;color:rgba(255,255,255,0.85);margin-top:4px;}
+  .action-btn .payout-label{font-size:14px;font-weight:700;font-family: ui-monospace, monospace;color:#fff;margin-top:4px;}
+  .even-btn{background:linear-gradient(135deg, var(--green), #0EA96B);box-shadow:0 10px 24px rgba(22,199,132,0.3);}
+  .odd-btn{background:linear-gradient(135deg, var(--red), #D8283F);box-shadow:0 10px 24px rgba(246,70,93,0.3);}
+  .action-btn.flash{transform:scale(0.97);}
+  .even-btn.flash{box-shadow:0 0 0 3px var(--green);}
+  .odd-btn.flash{box-shadow:0 0 0 3px var(--red);}
+
+  /* ============ BOTTOM NAV ============ */
+  .bottom-nav{
+    position:fixed;bottom:0;left:0;right:0;z-index:40;display:flex;align-items:center;
+    justify-content:space-around;height:70px;border-top:1px solid var(--border);background:var(--surface);
+  }
+  .bottom-nav button{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .bottom-nav .label{font-size:11px;font-weight:500;color:var(--textDim);}
+  .bottom-nav .active-icon{color:var(--amber);}
+  .bottom-nav .active-label{color:var(--amber);}
+
+  /* ============ RESPONSIVE (desktop) ============ */
+  @media (min-width:1024px){
+    .layout{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:start;}
+    main{padding-bottom:40px;}
+    .bottom-nav{display:none;}
+  }
+  @media (min-width:480px){
+    .deposit-btn{display:flex;}
+    .deposit-btn-mobile{display:none;}
+  }
+  @media (max-width:479px){
+    .deposit-btn{display:none;}
+    .deposit-btn-mobile{display:flex;align-items:center;justify-content:center;}
+  }
+  @media (min-width:640px){
+    .brand-name{display:block;}
+  }
+</style>
 </head>
-
 <body>
-  <body>
 
-<!-- Overlay -->
-<div id="overlay" class="overlay"></div>
-
-<!-- Sidebar -->
-<div id="sidebar" class="sidebar">
-
-    <div class="sidebar-header">
-
-        <button id="closeMenu" class="close-btn">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-
-        <h2>Menu</h2>
-
-        <span>🇬🇧 EN</span>
-
-    </div>
-
-    <div class="profile-box">
-
-        <div class="avatar" id="avatar">P</div>
-
-        <div class="user-info">
-            <h3 id="username">PrimeVest User</h3>
-            <p id="email">user@email.com</p>
-        </div>
-
-    </div>
-
-    <div class="menu-title">
-
-        <div class="logo-circle">P</div>
-
-        <span>PrimeVest</span>
-
-    </div>
-
-    <ul class="menu">
-
-        <li onclick="location.href='settings.html'">
-            <i class="fa-solid fa-user-gear"></i>
-            <span>Account Settings</span>
-            <i class="fa-solid fa-angle-right"></i>
-        </li>
-
-        <li onclick="location.href='deposit.html'">
-            <i class="fa-solid fa-wallet"></i>
-            <span>Deposit</span>
-            <i class="fa-solid fa-angle-right"></i>
-        </li>
-
-        <li onclick="location.href='withdraw.html'">
-            <i class="fa-solid fa-money-bill-transfer"></i>
-            <span>Withdraw</span>
-            <i class="fa-solid fa-angle-right"></i>
-        </li>
-
-        <li onclick="location.href='history.html'">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span>History</span>
-            <i class="fa-solid fa-angle-right"></i>
-        </li>
-
-        <li class="active">
-            <i class="fa-solid fa-gift"></i>
-            <span>Refer & Earn</span>
-        </li>
-
-    </ul>
-
-    <div class="divider"></div>
-
-    <div class="toggle-item">
-
-        <div class="left">
-            <i class="fa-solid fa-moon"></i>
-            Dark Theme
-        </div>
-
-        <label class="switch">
-            <input type="checkbox" checked>
-            <span class="slider"></span>
-        </label>
-
-    </div>
-
-    <ul class="menu secondary">
-
-        <li>
-            <i class="fa-regular fa-bell"></i>
-            <span>Notifications</span>
-        </li>
-
-        <li>
-            <i class="fa-regular fa-circle-question"></i>
-            <span>Help Centre</span>
-        </li>
-
-        <li>
-            <i class="fa-solid fa-shield-halved"></i>
-            <span>Security</span>
-        </li>
-
-        <li>
-            <i class="fa-regular fa-comments"></i>
-            <span>Live Chat</span>
-        </li>
-
-        <li>
-            <i class="fa-solid fa-circle-info"></i>
-            <span>About PrimeVest</span>
-        </li>
-
-    </ul>
-
-    <div class="logout">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        Log Out
-    </div>
-
-</div>
-
-<!-- HEADER -->
-
+<!-- ================= HEADER ================= -->
 <header>
+  <div class="brand">
+    <div class="brand-mark">T</div>
+    <span class="brand-name">TRADEX</span>
+  </div>
 
-<button id="menuBtn" class="menu-btn">
+  <div class="header-right">
+    <div class="balance-wrap">
+      <button class="balance-btn" id="balanceBtn">
+        $0.00
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="balance-menu" id="balanceMenu">
+        <button>Real account<div class="sub">$0.00</div></button>
+        <hr>
+        <button>Demo account<div class="sub">$10,000.00</div></button>
+      </div>
+    </div>
 
-<i class="fa-solid fa-bars"></i>
+    <button class="deposit-btn">Deposit</button>
+    <button class="deposit-btn-mobile" aria-label="Deposit">+</button>
 
-</button>
-<div class="wallet">
+    <button class="icon-btn" aria-label="Notifications">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span class="notif-dot"></span>
+    </button>
 
-<i class="fa-solid fa-wallet"></i>
-
-<span id="balance">$0.00</span>
-
-</div>
-
-<div class="header-right">
-
-<button id="depositBtn">
-
-Deposit
-
-</button>
-
-<i class="fa-regular fa-bell"></i>
-
-</div>
-
+    <button class="icon-btn" id="menuBtn" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </div>
 </header>
 
-<!-- MARKET TABS -->
-
-<div class="markets">
-
-<button class="market active"
-data-market="evenodd">
-
-Even / Odd
-
-</button>
-
-<button class="market"
-data-market="match">
-
-Matches / Differs
-
-</button>
-
-<button class="market"
-data-market="raise">
-
-Raise / Fall
-
-</button>
-
-</div>
-
-<!-- CHART -->
-
-<section class="chart-area">
-
-<div class="chart-top">
-
-<select id="symbol">
-
-<option>Vol 10 (1s)</option>
-
-<option>Vol 25 (1s)</option>
-
-<option>Vol 50 (1s)</option>
-
-<option>Vol 75 (1s)</option>
-
-<option>Vol 100 (1s)</option>
-
-</select>
-
-<div id="price">
-
-1000.00
-
-</div>
-
-</div>
-
-<canvas id="chartCanvas">
-  <div class="digit-board">
-
-    <div class="digit-card">
-        <span class="digit-number">0</span>
-        <span class="digit-percent" id="digit0">10%</span>
+<!-- ================= SIDEBAR DRAWER ================= -->
+<div class="drawer-overlay" id="drawerOverlay">
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <div class="drawer">
+    <div class="drawer-header">
+      <button id="closeDrawer" aria-label="Close menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <span class="title">Menu</span>
+      <span class="lang">🇬🇧 EN</span>
     </div>
 
-    <div class="digit-card">
-        <span class="digit-number">1</span>
-        <span class="digit-percent" id="digit1">9%</span>
+    <div class="drawer-profile">
+      <div class="avatar">B</div>
+      <div>
+        <div class="name">Brian Kibet</div>
+        <div class="email">b****@gmail.com</div>
+      </div>
     </div>
 
-    <div class="digit-card">
-        <span class="digit-number">2</span>
-        <span class="digit-percent" id="digit2">11%</span>
+    <div class="drawer-brand-row">
+      <div class="avatar-sm">P</div>
+      <span>PrimeVest</span>
     </div>
 
-    <div class="digit-card">
-        <span class="digit-number">3</span>
-        <span class="digit-percent" id="digit3">8%</span>
-    </div>
+    <nav class="drawer-nav" id="drawerNavTop"></nav>
 
-    <div class="digit-card">
-        <span class="digit-number">4</span>
-        <span class="digit-percent" id="digit4">10%</span>
-    </div>
+    <nav class="drawer-nav" id="drawerNavBottom">
+      <div class="drawer-toggle-row">
+        <span class="left">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <span class="label">Dark Theme</span>
+        </span>
+        <button class="switch on" id="themeSwitch" aria-label="Toggle dark theme"><span class="knob"></span></button>
+      </div>
+    </nav>
 
-    <div class="digit-card">
-        <span class="digit-number">5</span>
-        <span class="digit-percent" id="digit5">9%</span>
-    </div>
-
-    <div class="digit-card">
-        <span class="digit-number">6</span>
-        <span class="digit-percent" id="digit6">12%</span>
-    </div>
-
-    <div class="digit-card">
-        <span class="digit-number">7</span>
-        <span class="digit-percent" id="digit7">11%</span>
-    </div>
-
-    <div class="digit-card">
-        <span class="digit-number">8</span>
-        <span class="digit-percent" id="digit8">10%</span>
-    </div>
-
-    <div class="digit-card">
-        <span class="digit-number">9</span>
-        <span class="digit-percent" id="digit9">10%</span>
-    </div>
-
+    <button class="logout-btn">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      Log Out
+    </button>
+  </div>
 </div>
 
-</canvas>
-
-</section>
-
-<!-- AUTO / MANUAL -->
-
-<div class="mode">
-
-<button class="modeBtn active">
-
-AUTO
-
-</button>
-
-<button class="modeBtn">
-
-MANUAL
-
-</button>
-
-</div>
-
-<!-- STAKE -->
-
-<section class="trade-box">
-
-<label>
-
-Stake
-
-</label>
-
-<div class="stake-row">
-
-<button id="minus">
-
-−
-
-</button>
-
-<input
-type="number"
-id="stake"
-value="10"
-min="1">
-
-<button id="plus">
-
-+
-
-</button>
-
-</div>
-
-<div class="quick">
-
-<button>1</button>
-
-<button>5</button>
-
-<button>10</button>
-
-<button>25</button>
-
-<button>50</button>
-
-<button>100</button>
-
-</div>
-
-<div class="settings">
-
-<div>
-
-<label>
-
-Take Profit
-
-</label>
-
-<input
-type="number"
-id="takeProfit"
-value="200">
-
-</div>
-
-<div>
-
-<label>
-
-Stop Loss
-
-</label>
-
-<input
-type="number"
-id="stopLoss"
-value="100">
-
-</div>
-
-<div>
-
-<label>
-
-Multiplier
-
-</label>
-
-<input
-type="number"
-id="multiplier"
-value="2">
-
-</div>
-
-</div>
-
-</section>
-
-<!-- EVEN / ODD -->
-
-<section
-id="evenoddMarket"
-class="marketBox">
-
-<button
-class="buy even">
-
-EVEN
-
-<span>
-
-95%
-
-</span>
-
-</button>
-
-<button
-class="sell odd">
-
-ODD
-
-<span>
-
-95%
-
-</span>
-
-</button>
-
-</section>
-
-<!-- MATCHES / DIFFERS -->
-
-<section
-id="matchMarket"
-class="marketBox hidden">
-
-<input
-type="number"
-id="matchDigit"
-min="0"
-max="9"
-placeholder="Digit 0-9">
-
-<button
-class="buy">
-
-MATCHES
-
-</button>
-
-<button
-class="sell">
-
-DIFFERS
-
-</button>
-
-</section>
-
-<!-- RAISE / FALL -->
-
-<section
-id="raiseMarket"
-class="marketBox hidden">
-
-<button
-class="buy">
-
-RAISE
-
-</button>
-
-<button
-class="sell">
-
-FALL
-
-</button>
-
-</section>
-
-<!-- BOTTOM NAVIGATION -->
-
-<nav>
-
-<a href="dashboard.html">
-
-<i class="fa-solid fa-house"></i>
-
-<span>
-
-Home
-
-</span>
-
-</a>
-
-<a
-class="active"
-href="trade.html">
-
-<i class="fa-solid fa-chart-line"></i>
-
-<span>
-
-Trade
-
-</span>
-
-</a>
-
-<a href="history.html">
-
-<i class="fa-solid fa-clock"></i>
-
-<span>
-
-History
-
-</span>
-
-</a>
-
-<a href="profile.html">
-
-<i class="fa-solid fa-user"></i>
-
-<span>
-
-Profile
-
-</span>
-
-</a>
-
-</nav>
-
-<script src="js/trade.js"></script>
-
+<!-- ================= MAIN ================= -->
+<main>
+  <div class="layout">
+    <!-- LEFT / MAIN COLUMN -->
+    <div class="left-col">
+      <!-- Market tabs -->
+      <div class="tabs" id="marketTabs"></div>
+
+      <!-- Chart card -->
+      <div class="chart-card">
+        <div class="chart-head">
+          <div>
+            <div class="chart-symbol">
+              <span class="live-dot"></span>
+              <span>VOL 10 (1S)</span>
+            </div>
+            <div class="price-row">
+              <span class="price-value" id="priceValue">0.00</span>
+              <span class="price-change" id="priceChange">0.00%</span>
+            </div>
+          </div>
+          <div class="zoom-controls">
+            <button class="zoom-btn" id="zoomOut" aria-label="Zoom out">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <button class="zoom-btn" id="zoomIn" aria-label="Zoom in">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas id="priceChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Digit selector -->
+      <div class="digit-card">
+        <div class="digit-title">LAST DIGIT PROBABILITY</div>
+        <div class="digit-row" id="digitRow"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT / TRADING PANEL -->
+    <div class="right-col">
+      <div class="panel-card">
+        <div class="mode-toggle" id="modeToggle"></div>
+
+        <div class="stake-block">
+          <div class="stake-head">
+            <span class="stake-label">STAKE</span>
+            <span class="stake-payout">Payout <b id="payoutValue">$19.52</b></span>
+          </div>
+          <div class="stake-input-wrap">
+            <span class="dollar">$</span>
+            <input id="stakeInput" inputmode="decimal" value="10" />
+          </div>
+          <div class="quick-amounts" id="quickAmounts"></div>
+        </div>
+
+        <div class="settings-grid">
+          <div class="settings-item">
+            <label>TARGET PROFIT</label>
+            <div class="settings-input"><span>$</span><input id="targetProfit" inputmode="decimal" value="200" /></div>
+          </div>
+          <div class="settings-item">
+            <label>STOP LOSS</label>
+            <div class="settings-input"><span>$</span><input id="stopLoss" inputmode="decimal" value="999" /></div>
+          </div>
+          <div class="settings-item">
+            <label>MULTIPLIER</label>
+            <div class="settings-input"><span>x</span><input id="multiplier" inputmode="decimal" value="2" /></div>
+          </div>
+        </div>
+
+        <div class="action-grid">
+          <button class="action-btn even-btn" id="evenBtn">
+            <span class="main-label">Even</span>
+            <span class="sub-label">95.2%</span>
+            <span class="payout-label" id="evenPayout">$19.52</span>
+          </button>
+          <button class="action-btn odd-btn" id="oddBtn">
+            <span class="main-label">Odd</span>
+            <span class="sub-label">95.2%</span>
+            <span class="payout-label" id="oddPayout">$19.52</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= BOTTOM NAV ================= -->
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<script>
+(function(){
+  const COLORS = {
+    green:"#16C784",
+    red:"#F6465D",
+    textDim:"#7D8699",
+    textFaint:"#4B5566",
+    border:"rgba(255,255,255,0.045)",
+    amber:"#FFB020",
+  };
+
+  // ---------------- Mock data generation ----------------
+  const BASE_PRICE = 9295.61;
+  function makeInitialSeries(base, points){
+    const now = Date.now();
+    let price = base * 1.0215;
+    const out = [];
+    for(let i=0;i<points;i++){
+      const drift = (base - price) * 0.02;
+      const noise = (Math.random()-0.5) * base * 0.0009;
+      price = price + drift + noise;
+      out.push({ idx:i, time: new Date(now - (points-i)*1000), price: Number(price.toFixed(2)) });
+    }
+    out[out.length-1].price = base;
+    return out;
+  }
+
+  let data = makeInitialSeries(BASE_PRICE, 80);
+  let zoomPoints = 40;
+  const openingPrice = data[0].price;
+
+  let INITIAL_DIGIT_STATS = [8.1,9.4,10.2,9.8,10.6,9.1,10.9,8.7,11.3,11.9];
+  let digitStats = INITIAL_DIGIT_STATS.slice();
+  let selectedDigit = 5;
+
+  function rotateDigitStats(prev){
+    const nudged = prev.map(v => Math.max(2, v + (Math.random()-0.5)*3.2));
+    const sum = nudged.reduce((a,b)=>a+b,0);
+    return nudged.map(v => Number(((v/sum)*100).toFixed(1)));
+  }
+
+  // ---------------- State ----------------
+  let mode = "AUTO";
+  let stake = 10;
+  const quickAmounts = [1,5,10,25,50,100];
+  const payoutRate = 1.952;
+
+  // ---------------- DOM refs ----------------
+  const priceValueEl = document.getElementById('priceValue');
+  const priceChangeEl = document.getElementById('priceChange');
+  const payoutValueEl = document.getElementById('payoutValue');
+  const evenPayoutEl = document.getElementById('evenPayout');
+  const oddPayoutEl = document.getElementById('oddPayout');
+  const stakeInputEl = document.getElementById('stakeInput');
+  const quickAmountsEl = document.getElementById('quickAmounts');
+  const digitRowEl = document.getElementById('digitRow');
+  const modeToggleEl = document.getElementById('modeToggle');
+  const canvas = document.getElementById('priceChart');
+  const ctx = canvas.getContext('2d');
+
+  // ---------------- Render: mode toggle ----------------
+  function renderModeToggle(){
+    modeToggleEl.innerHTML = '';
+    ['AUTO','MANUAL'].forEach(m=>{
+      const btn = document.createElement('button');
+      btn.className = 'mode-btn' + (mode===m ? ' active' : '');
+      btn.textContent = m;
+      btn.onclick = ()=>{ mode = m; renderModeToggle(); };
+      modeToggleEl.appendChild(btn);
+    });
+  }
+
+  // ---------------- Render: quick amounts ----------------
+  function renderQuickAmounts(){
+    quickAmountsEl.innerHTML = '';
+    quickAmounts.forEach(amt=>{
+      const btn = document.createElement('button');
+      btn.className = 'quick-btn' + (stake===amt ? ' active' : '');
+      btn.textContent = '$'+amt;
+      btn.onclick = ()=> commitStake(amt);
+      quickAmountsEl.appendChild(btn);
+    });
+  }
+
+  function commitStake(val){
+    const n = Math.max(0, Number(val) || 0);
+    stake = n;
+    stakeInputEl.value = String(n);
+    updatePayout();
+    renderQuickAmounts();
+  }
+
+  stakeInputEl.addEventListener('input', (e)=>{
+    const v = e.target.value.replace(/[^0-9.]/g,'');
+    e.target.value = v;
+  });
+  stakeInputEl.addEventListener('blur', (e)=> commitStake(e.target.value));
+
+  function updatePayout(){
+    const payout = (stake * payoutRate).toFixed(2);
+    payoutValueEl.textContent = '$'+payout;
+    evenPayoutEl.textContent = '$'+payout;
+    oddPayoutEl.textContent = '$'+payout;
+  }
+
+  // ---------------- Render: market tabs ----------------
+  const marketTabsEl = document.getElementById('marketTabs');
+  const TABS = [
+    {id:'matches', label:'Matches/Differs'},
+    {id:'evenodd', label:'Even/Odd'},
+    {id:'overunder', label:'Over/Under'},
+  ];
+  let activeTab = 'evenodd';
+  function renderTabs(){
+    marketTabsEl.innerHTML = '';
+    TABS.forEach(tab=>{
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn' + (activeTab===tab.id ? ' active' : '');
+      btn.textContent = tab.label;
+      btn.onclick = ()=>{ activeTab = tab.id; renderTabs(); };
+      marketTabsEl.appendChild(btn);
+    });
+  }
+
+  // ---------------- Render: digit selector ----------------
+  function renderDigits(){
+    digitRowEl.innerHTML = '';
+    const highestVal = Math.max(...digitStats);
+    digitStats.forEach((pct, digit)=>{
+      const selected = digit === selectedDigit;
+      const highest = pct === highestVal;
+      const item = document.createElement('div');
+      item.className = 'digit-item';
+      item.style.cursor = 'pointer';
+      item.innerHTML = `
+        <span class="digit-circle${selected ? ' selected' : ''}">${digit}</span>
+        <span class="digit-pct${selected ? ' selected' : (highest ? ' highest' : '')}">${pct.toFixed(1)}%</span>
+      `;
+      item.onclick = ()=>{ selectedDigit = digit; renderDigits(); };
+      digitRowEl.appendChild(item);
+    });
+  }
+
+  // ---------------- Render: bottom nav ----------------
+  const bottomNavEl = document.getElementById('bottomNav');
+  const NAV_ITEMS = [
+    {label:'Trade', active:true, icon:'<path d="M3 17l6-6 4 4 8-8"></path><path d="M14 7h7v7"></path>'},
+    {label:'AI', active:false, icon:'<rect x="3" y="8" width="18" height="12" rx="2"></rect><circle cx="8.5" cy="14" r="1.5"></circle><circle cx="15.5" cy="14" r="1.5"></circle><path d="M12 8V4"></path><circle cx="12" cy="3" r="1"></circle>'},
+    {label:'Positions', active:false, icon:'<path d="M20 7h-9M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle>'},
+  ];
+  function renderBottomNav(){
+    bottomNavEl.innerHTML = '';
+    NAV_ITEMS.forEach(item=>{
+      const btn = document.createElement('button');
+      btn.innerHTML = `
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="${item.active ? COLORS.amber : COLORS.textDim}" stroke-width="2">${item.icon}</svg>
+        <span class="label" style="color:${item.active ? COLORS.amber : COLORS.textDim}">${item.label}</span>
+      `;
+      bottomNavEl.appendChild(btn);
+    });
+  }
+
+  // ---------------- Render: drawer nav ----------------
+  const drawerNavTop = document.getElementById('drawerNavTop');
+  const TOP_ITEMS = [
+    {label:'Account Settings', icon:'<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>'},
+    {label:'Deposit', icon:'<rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"></path>'},
+    {label:'Withdraw', icon:'<polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path>'},
+    {label:'History', icon:'<path d="M3 3v5h5"></path><path d="M3.05 13a9 9 0 1 0 .5-4.5"></path><path d="M12 7v5l4 2"></path>'},
+    {label:'Refer & Earn', icon:'<polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>', highlight:true},
+  ];
+  const BOTTOM_ITEMS = [
+    {label:'Notifications', icon:'<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path>'},
+    {label:'Help Centre', icon:'<circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line>'},
+    {label:'Security', icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>'},
+    {label:'Live Chat', icon:'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>'},
+    {label:'About PrimeVest', icon:'<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>'},
+  ];
+  function renderDrawerNav(){
+    drawerNavTop.innerHTML = '';
+    TOP_ITEMS.forEach(item=>{
+      const btn = document.createElement('button');
+      btn.className = 'drawer-item' + (item.highlight ? ' highlight' : '');
+      const iconColor = item.highlight ? '#C77DFF' : COLORS.textDim;
+      btn.innerHTML = `
+        <span class="left">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2">${item.icon}</svg>
+          <span class="label">${item.label}</span>
+        </span>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      `;
+      drawerNavTop.appendChild(btn);
+    });
+
+    const bottomNavWrap = document.getElementById('drawerNavBottom');
+    BOTTOM_ITEMS.forEach(item=>{
+      const btn = document.createElement('button');
+      btn.className = 'drawer-item';
+      btn.innerHTML = `
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="${COLORS.textDim}" stroke-width="2">${item.icon}</svg>
+        <span class="label">${item.label}</span>
+      `;
+      bottomNavWrap.appendChild(btn);
+    });
+  }
+
+  // ---------------- Chart drawing (canvas) ----------------
+  function resizeCanvas(){
+    const wrap = canvas.parentElement;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = wrap.clientWidth * dpr;
+    canvas.height = wrap.clientHeight * dpr;
+    canvas.style.width = wrap.clientWidth + 'px';
+    canvas.style.height = wrap.clientHeight + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    drawChart();
+  }
+
+  function drawChart(){
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    ctx.clearRect(0,0,w,h);
+
+    const visible = data.slice(-zoomPoints);
+    if(visible.length < 2) return;
+
+    const padTop = 8, padBottom = 24, padLeft = 4, padRight = 58;
+    const chartW = w - padLeft - padRight;
+    const chartH = h - padTop - padBottom;
+
+    const prices = visible.map(d=>d.price);
+    let min = Math.min(...prices), max = Math.max(...prices);
+    if(min === max){ min -= 1; max += 1; }
+    const rangePad = (max-min) * 0.1;
+    min -= rangePad; max += rangePad;
+
+    // gridlines (horizontal)
+    ctx.strokeStyle = COLORS.border;
+    ctx.lineWidth = 1;
+    const gridLines = 4;
+    for(let i=0;i<=gridLines;i++){
+      const y = padTop + (chartH * i/gridLines);
+      ctx.beginPath();
+      ctx.moveTo(padLeft, y);
+      ctx.lineTo(padLeft+chartW, y);
+      ctx.stroke();
+    }
+
+    // y-axis labels (right side)
+    ctx.fillStyle = COLORS.textFaint;
+    ctx.font = '10px ui-monospace, monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    for(let i=0;i<=gridLines;i++){
+      const y = padTop + (chartH * i/gridLines);
+      const val = max - (max-min)*(i/gridLines);
+      ctx.fillText(val.toFixed(1), padLeft+chartW+6, y);
+    }
+
+    // x-axis labels (time), sparse
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    const labelCount = Math.min(5, visible.length);
+    for(let i=0;i<labelCount;i++){
+      const dataIdx = Math.floor(i * (visible.length-1) / (labelCount-1 || 1));
+      const x = padLeft + chartW * (dataIdx/(visible.length-1));
+      const t = new Date(visible[dataIdx].time);
+      const label = t.toLocaleTimeString([], {minute:'2-digit', second:'2-digit'});
+      ctx.fillText(label, x, padTop+chartH+6);
+    }
+
+    // trend color
+    const isUp = visible[visible.length-1].price >= visible[0].price;
+    const trendColor = isUp ? COLORS.green : COLORS.red;
+
+    // line path
+    ctx.beginPath();
+    visible.forEach((d,i)=>{
+      const x = padLeft + chartW * (i/(visible.length-1));
+      const y = padTop + chartH * (1 - (d.price-min)/(max-min));
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle = trendColor;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  }
+
+  // ---------------- Update price display ----------------
+  function updatePriceDisplay(){
+    const currentPrice = data[data.length-1].price;
+    const changePct = ((currentPrice - openingPrice)/openingPrice) * 100;
+    const isUp = changePct >= 0;
+    priceValueEl.textContent = currentPrice.toFixed(2);
+    priceChangeEl.textContent = (isUp ? '▲ ' : '▼ ') + Math.abs(changePct).toFixed(2) + '%';
+    priceChangeEl.style.color = isUp ? COLORS.green : COLORS.red;
+  }
+
+  // ---------------- Trade actions ----------------
+  const evenBtn = document.getElementById('evenBtn');
+  const oddBtn = document.getElementById('oddBtn');
+  function handlePlaceTrade(side){
+    const btn = side === 'even' ? evenBtn : oddBtn;
+    btn.classList.add('flash');
+    setTimeout(()=> btn.classList.remove('flash'), 500);
+  }
+  evenBtn.onclick = ()=> handlePlaceTrade('even');
+  oddBtn.onclick = ()=> handlePlaceTrade('odd');
+
+  // ---------------- Zoom controls ----------------
+  document.getElementById('zoomOut').onclick = ()=>{
+    zoomPoints = Math.min(data.length, zoomPoints+10);
+    drawChart();
+  };
+  document.getElementById('zoomIn').onclick = ()=>{
+    zoomPoints = Math.max(15, zoomPoints-10);
+    drawChart();
+  };
+
+  // ---------------- Balance menu ----------------
+  const balanceBtn = document.getElementById('balanceBtn');
+  const balanceMenu = document.getElementById('balanceMenu');
+  balanceBtn.onclick = (e)=>{
+    e.stopPropagation();
+    balanceMenu.classList.toggle('open');
+  };
+  document.addEventListener('click', ()=> balanceMenu.classList.remove('open'));
+
+  // ---------------- Drawer ----------------
+  const drawerOverlay = document.getElementById('drawerOverlay');
+  document.getElementById('menuBtn').onclick = ()=> drawerOverlay.classList.add('open');
+  document.getElementById('closeDrawer').onclick = ()=> drawerOverlay.classList.remove('open');
+  document.getElementById('drawerBackdrop').onclick = ()=> drawerOverlay.classList.remove('open');
+
+  // ---------------- Theme switch (visual only) ----------------
+  const themeSwitch = document.getElementById('themeSwitch');
+  let darkTheme = true;
+  themeSwitch.onclick = ()=>{
+    darkTheme = !darkTheme;
+    themeSwitch.classList.toggle('on', darkTheme);
+  };
+
+  // ---------------- Live simulation ----------------
+  setInterval(()=>{
+    const last = data[data.length-1].price;
+    const noise = (Math.random()-0.5) * BASE_PRICE * 0.0011;
+    const next = Number((last+noise).toFixed(2));
+    data = [...data.slice(1), { idx: data[data.length-1].idx+1, time: new Date(), price: next }];
+    updatePriceDisplay();
+    drawChart();
+  }, 2000);
+
+  setInterval(()=>{
+    digitStats = rotateDigitStats(digitStats);
+    renderDigits();
+  }, 1800);
+
+  window.addEventListener('resize', resizeCanvas);
+
+  // ---------------- Init ----------------
+  renderTabs();
+  renderModeToggle();
+  renderQuickAmounts();
+  renderDigits();
+  renderBottomNav();
+  renderDrawerNav();
+  updatePayout();
+  updatePriceDisplay();
+  resizeCanvas();
+})();
+</script>
 </body>
-
 </html>
