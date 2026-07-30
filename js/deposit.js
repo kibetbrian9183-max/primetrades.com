@@ -2,8 +2,8 @@
 // PRIMEVEST DEPOSIT
 // ======================================
 
-// Change this to your deployed backend
 const API_BASE_URL = "https://primetrades-mpesa-backend.onrender.com";
+const USD_TO_KES = 130; // Exchange Rate
 
 // ======================================
 // CHECK LOGIN
@@ -28,7 +28,7 @@ const historyList = document.getElementById("depositHistory");
 
 balance.textContent = "$" + Number(currentUser.balance || 0).toFixed(2);
 
-// Prefill phone number if available
+// Prefill phone
 if (currentUser.phone) {
     phoneInput.value = currentUser.phone;
 }
@@ -43,24 +43,23 @@ function loadHistory() {
 
     historyList.innerHTML = "";
 
-    if (deposits.length === 0) {
+    const userDeposits = deposits.filter(item => item.userId === currentUser.id);
+
+    if (userDeposits.length === 0) {
         historyList.innerHTML = "<li>No deposits yet.</li>";
         return;
     }
 
-    deposits
-        .filter(item => item.userId === currentUser.id)
-        .reverse()
-        .forEach(item => {
+    userDeposits.reverse().forEach(item => {
 
-            historyList.innerHTML += `
-                <li>
-                    KES ${item.amount} - ${item.status}<br>
-                    <small>${item.date}</small>
-                </li>
-            `;
+        historyList.innerHTML += `
+            <li>
+                KES ${(item.kesAmount ?? item.amount).toLocaleString()} - ${item.status}<br>
+                <small>${item.date}</small>
+            </li>
+        `;
 
-        });
+    });
 
 }
 
@@ -77,23 +76,20 @@ depositBtn.addEventListener("click", async () => {
     // Remove spaces, dashes and +
     phone = phone.replace(/[\s\-+]/g, "");
 
-    // Convert Kenyan numbers to 254 format
+    // Convert to 254 format
     if (phone.startsWith("07") || phone.startsWith("01")) {
         phone = "254" + phone.substring(1);
     } else if (phone.startsWith("7") || phone.startsWith("1")) {
         phone = "254" + phone;
     }
 
-    // Keep only digits
     phone = phone.replace(/\D/g, "");
 
-    // Validate
     if (!/^254(7|1)\d{8}$/.test(phone)) {
         alert("Enter a valid Safaricom phone number.");
         return;
     }
 
-    // Remove commas, KSh, spaces etc.
     const amount = Number(
         amountInput.value.replace(/[^\d.]/g, "")
     );
@@ -119,12 +115,11 @@ depositBtn.addEventListener("click", async () => {
             },
 
             body: JSON.stringify({
-
-                phone: phone,
-                amount: amount,
+                phone,
+                amount,
                 accountReference: "PrimeVest Deposit",
-                transactionDesc: "Wallet Deposit"
-
+                transactionDesc: "Wallet Deposit",
+                purpose: "deposit"
             })
 
         });
@@ -137,67 +132,96 @@ depositBtn.addEventListener("click", async () => {
 
         statusBox.style.color = "#22c55e";
         statusBox.textContent =
-            "STK Push sent. Complete the payment on your phone.";
+            "STK Push sent. Complete payment on your phone.";
 
-        // Demo update
-        // Replace this with callback verification in production
-
+        // Demo only
         setTimeout(() => {
+const checkoutRequestId = data.checkoutRequestId;
 
-            currentUser.balance =
-                Number(currentUser.balance || 0) + amount;
+const interval = setInterval(async () => {
 
-            balance.textContent =
-                "$" + currentUser.balance.toFixed(2);
+    try {
 
-            localStorage.setItem(
-                "currentUser",
-                JSON.stringify(currentUser)
-            );
+        const res = await fetch(
+            `${API_BASE_URL}/api/mpesa/status/${checkoutRequestId}`
+        );
 
-            let users =
-                JSON.parse(localStorage.getItem("users")) || [];
+        const payment = await res.json();
 
-            users = users.map(user =>
-                user.id === currentUser.id ? currentUser : user
-            );
+        if (payment.status === "pending") {
+            return;
+        }
 
-            localStorage.setItem(
-                "users",
-                JSON.stringify(users)
-            );
+        clearInterval(interval);
 
-            deposits.push({
+        if (payment.status === "failed") {
 
-                userId: currentUser.id,
-                amount: amount,
-                status: "Completed",
-                date: new Date().toLocaleString()
+            statusBox.style.color = "#ef4444";
+            statusBox.textContent =
+                payment.failureReason || "Payment failed.";
 
-            });
+            return;
+        }
 
-            localStorage.setItem(
-                "deposits",
-                JSON.stringify(deposits)
-            );
+        // SUCCESS
 
-            loadHistory();
+        const usdAmount = payment.amountPaid / USD_TO_KES;
 
-            amountInput.value = "";
+        currentUser.balance =
+            Number(currentUser.balance || 0) + usdAmount;
 
-        }, 5000);
+        balance.textContent =
+            "$" + currentUser.balance.toFixed(2);
 
-    } catch (error) {
+        localStorage.setItem(
+            "currentUser",
+            JSON.stringify(currentUser)
+        );
+
+        let users =
+            JSON.parse(localStorage.getItem("users")) || [];
+
+        users = users.map(user =>
+            user.id === currentUser.id ? currentUser : user
+        );
+
+        localStorage.setItem(
+            "users",
+            JSON.stringify(users)
+        );
+
+        deposits.push({
+
+            userId: currentUser.id,
+            kesAmount: payment.amountPaid,
+            usdAmount: usdAmount,
+            mpesaReceipt: payment.mpesaReceipt,
+            status: "Completed",
+            date: new Date().toLocaleString()
+
+        });
+
+        localStorage.setItem(
+            "deposits",
+            JSON.stringify(deposits)
+        );
+
+        loadHistory();
+
+        amountInput.value = "";
+
+        statusBox.style.color = "#22c55e";
+        statusBox.textContent =
+            "Deposit completed successfully.";
+
+    } catch (err) {
+
+        clearInterval(interval);
 
         statusBox.style.color = "#ef4444";
-        statusBox.textContent = error.message;
-
-    } finally {
-
-        depositBtn.disabled = false;
-        depositBtn.innerHTML =
-            '<i class="fa-solid fa-wallet"></i> Deposit Now';
+        statusBox.textContent =
+            "Unable to verify payment.";
 
     }
 
-});
+}, 3000);
