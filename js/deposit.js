@@ -220,3 +220,18 @@ const interval = setInterval(async () => {
     }
 
 }, 3000);
+
+    } catch (error) {
+
+        statusBox.style.color = "#ef4444";
+        statusBox.textContent = error.message;
+
+    } finally {
+
+        depositBtn.disabled = false;
+        depositBtn.innerHTML =
+            '<i class="fa-solid fa-wallet"></i> Deposit Now';
+
+    }
+
+});
