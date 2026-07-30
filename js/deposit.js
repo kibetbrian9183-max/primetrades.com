@@ -254,3 +254,16 @@ setTimeout(() => {
     }
 
 }, 120000);
+            } catch (error) {
+
+        statusBox.style.color = "#ef4444";
+        statusBox.textContent =
+            error.message || "Failed to send STK Push.";
+
+        depositBtn.disabled = false;
+        depositBtn.innerHTML =
+            '<i class="fa-solid fa-wallet"></i> Deposit Now';
+
+    }
+
+});
