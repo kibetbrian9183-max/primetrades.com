@@ -2,13 +2,14 @@
 // PRIMEVEST WITHDRAW
 // ======================================
 
+const USD_TO_KES = 130;
+
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
 if (!currentUser) {
     window.location.href = "index.html";
 }
 
-// Elements
 const balance = document.getElementById("balance");
 const phoneInput = document.getElementById("phone");
 const amountInput = document.getElementById("amount");
@@ -16,50 +17,33 @@ const withdrawBtn = document.getElementById("withdrawBtn");
 const status = document.getElementById("status");
 const historyList = document.getElementById("withdrawHistory");
 
-// Always get the latest user from localStorage
-function refreshCurrentUser() {
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    if (user) {
-        currentUser.balance = Number(user.balance || 0);
-        currentUser.phone = user.phone;
-        currentUser.id = user.id;
-    }
-}
-
-// Update balance
-function updateBalance() {
-    refreshCurrentUser();
-    balance.textContent = "$" + Number(currentUser.balance || 0).toFixed(2);
-}
-
-updateBalance();
+// Display wallet balance (USD)
+balance.textContent = "$" + Number(currentUser.balance || 0).toFixed(2);
 
 // Prefill phone
 if (currentUser.phone) {
     phoneInput.value = currentUser.phone;
 }
 
-// Load withdrawal history
+// Load history
 let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || [];
 
 function loadHistory() {
 
     historyList.innerHTML = "";
 
-    const userWithdrawals = withdrawals
-        .filter(item => item.userId === currentUser.id)
-        .reverse();
+    const userWithdrawals = withdrawals.filter(item => item.userId === currentUser.id);
 
     if (userWithdrawals.length === 0) {
         historyList.innerHTML = "<li>No withdrawals yet.</li>";
         return;
     }
 
-    userWithdrawals.forEach(item => {
+    userWithdrawals.reverse().forEach(item => {
 
         historyList.innerHTML += `
         <li>
-            $${Number(item.amount).toFixed(2)} - ${item.status}<br>
+            KES ${Number(item.kesAmount).toLocaleString()} - ${item.status}<br>
             <small>${item.date}</small>
         </li>
         `;
@@ -73,24 +57,35 @@ loadHistory();
 // Withdraw
 withdrawBtn.addEventListener("click", () => {
 
-    refreshCurrentUser();
+    let phone = phoneInput.value.trim();
 
-    const phone = phoneInput.value.trim();
-    const amount = Number(amountInput.value);
+    phone = phone.replace(/[\s\-+]/g, "");
 
-    if (!phone) {
+    if (phone.startsWith("07") || phone.startsWith("01")) {
+        phone = "254" + phone.substring(1);
+    } else if (phone.startsWith("7") || phone.startsWith("1")) {
+        phone = "254" + phone;
+    }
+
+    phone = phone.replace(/\D/g, "");
+
+    if (!/^254(7|1)\d{8}$/.test(phone)) {
         status.style.color = "#ef4444";
-        status.textContent = "Enter your M-Pesa number.";
+        status.textContent = "Enter a valid Safaricom number.";
         return;
     }
 
-    if (isNaN(amount) || amount <= 0) {
+    const kesAmount = Number(amountInput.value.replace(/[^\d.]/g, ""));
+
+    if (isNaN(kesAmount) || kesAmount <= 0) {
         status.style.color = "#ef4444";
         status.textContent = "Enter a valid amount.";
         return;
     }
 
-    if (amount > Number(currentUser.balance)) {
+    const usdAmount = kesAmount / USD_TO_KES;
+
+    if (usdAmount > Number(currentUser.balance || 0)) {
         status.style.color = "#ef4444";
         status.textContent = "Insufficient wallet balance.";
         return;
@@ -99,53 +94,33 @@ withdrawBtn.addEventListener("click", () => {
     withdrawBtn.disabled = true;
     withdrawBtn.innerHTML = "Processing...";
 
-    status.style.color = "#facc15";
-    status.textContent = "Submitting withdrawal...";
-
     setTimeout(() => {
 
-        // Deduct balance
-        currentUser.balance = Number(currentUser.balance) - amount;
+        currentUser.balance -= usdAmount;
 
-        // Save current user
-        localStorage.setItem(
-            "currentUser",
-            JSON.stringify(currentUser)
-        );
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
-        // Update users array
         let users = JSON.parse(localStorage.getItem("users")) || [];
 
-        users = users.map(user => {
-            if (user.id === currentUser.id) {
-                return currentUser;
-            }
-            return user;
-        });
-
-        localStorage.setItem(
-            "users",
-            JSON.stringify(users)
+        users = users.map(user =>
+            user.id === currentUser.id ? currentUser : user
         );
 
-        // Save history
+        localStorage.setItem("users", JSON.stringify(users));
+
         withdrawals.push({
             userId: currentUser.id,
             phone: phone,
-            amount: amount,
+            kesAmount: kesAmount,
+            usdAmount: usdAmount,
             status: "Pending",
             date: new Date().toLocaleString()
         });
 
-        localStorage.setItem(
-            "withdrawals",
-            JSON.stringify(withdrawals)
-        );
+        localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
 
-        // Reload history
-        withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || [];
+        balance.textContent = "$" + currentUser.balance.toFixed(2);
 
-        updateBalance();
         loadHistory();
 
         amountInput.value = "";
