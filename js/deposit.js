@@ -2,7 +2,7 @@
 // PRIMEVEST DEPOSIT
 // ======================================
 
-const API_BASE_URL = "https://primetrades-mpesa-backend.onrender.com";
+const API_BASE_URL = "https://smartpaypesa-backend.onrender.com";
 const USD_TO_KES = 130; // Exchange Rate
 
 // ======================================
